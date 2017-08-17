@@ -1,0 +1,24 @@
+stuff I removed from maptiler
+
+
+  /**
+   * remove zoom lvl base images
+   * @param int $min - min zoom lvl
+   * @param int $max - max zoom lvl
+   */
+  public function removeZoomBaseImages($min = null, $max = null){
+    //prepare zoom levels
+    if($min){
+      $max = !$max ? $min : $max;
+      $this->zoom_min = $min;
+      $this->zoom_max = $max;
+    }
+    //remove
+    $ext = $this->getExtension();
+    for($i = $this->zoom_min; $i <= $this->zoom_max; $i++){
+      $lvl_file = $this->tiles_path.'/'.$i.'.'.$ext;
+      if(is_file($lvl_file)){
+        unlink($lvl_file);
+      }
+    }
+  }

@@ -1,0 +1,7 @@
+# See https://help.github.com/ignore-files/ for more about ignoring files.
+
+# large files and other crap
+/cli/background_slices
+/cli/old_images
+/cli/__pycache__
+/cli/.bash_history
