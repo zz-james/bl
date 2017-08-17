@@ -1,3 +1,22 @@
+/* about link */
+
+
+#about {
+    position: absolute;
+    background: #EFEFEF;
+    right: 45px;
+    bottom: 50px; 
+}
+
+#about button{
+    height: 55px;
+    width: 60px;
+}
+
+#about a {
+    text-decoration: none;
+}
+
 /*Plain CSS*/
 
 .modal {

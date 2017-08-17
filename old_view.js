@@ -7,9 +7,9 @@
 //  in the SVG layer which is used for highlights
 //  in the calculation of which book the mouse is over
 //  in the drawing of the 'revealed' staff image overlay
-var SHELF_HEIGHT = 1464.825 //1500; // 733;  // 733 multiplied by shelf number (0 to 31) gives us the bottom value in pix
+var SHELF_HEIGHT = 733;  // 733 multiplied by shelf number (0 to 31) gives us the bottom value in pix
 var X_ADJUST     = 0.9765;  // the left of each book in the model data must be multiplied by this to match the rendered map
-var Y_ADJUST     = 0 ; //122;
+var Y_ADJUST     = 122;
 var UPDATEURL    = 'update2.php';
 var INITIALISEURL= 'initialise.php';
 var KEEPALIVEURL = 'http://explore.bl.uk/primo_library/libweb/action/display.do?frbrVersion=2&tabs=moreTab&ct=display&fn=search&doc=BLL01009535560&indx=2&recIds=BLL01009535560&recIdxs=1&elementId=1&renderMode=poppedOut&displayMode=full&frbrVersion=2&dscnt=1&scp.scps=scope:(BLCONTENT)&frbg=&tab=local_tab&dstmp=1472217154611&srt=rank&mode=Basic&vl(488279563UI0)=any&dum=true&tb=t&vl(freeText0)=Please%20Kill%20Me:%20The%20Uncensored%20Oral%20History%20of%20Punk,%20Gillian%20McCain&vid=BLVU1'; // this is a hack
@@ -30,9 +30,9 @@ var modal; // refernce to modal win
 var bounds = L.latLngBounds(L.latLng(0, 0),L.latLng(-195.3125, 195.3125));
 // make instances of the tile layers
 
-books = L.tileLayer('http://167.98.15.154/tiles/{z}/{x}/{y}.png', {
+books = L.tileLayer('old_tiles/{z}/{x}/{y}.png', {
   minZoom: 2,
-  maxZoom: 8,
+  maxZoom: 7,
   continuousWorld: false,
   noWrap: true,
   tileSize: 250,
@@ -45,9 +45,9 @@ highlightLayer = new L.LayerGroup(); // declare svg roll over highlight layer
 map = L.map('map',{
   attributionControl: false,
   zoomControl: false,
-  crs        : L.CRS.Simple,
-  layers     : [highlightLayer, books],
-  maxBounds  : L.latLngBounds(L.latLng(1, -1),L.latLng(-195.3125, 195.3125)),  //southWest, northEast
+  crs   : L.CRS.Simple,
+  layers: [highlightLayer, books],
+  maxBounds: L.latLngBounds(L.latLng(1, -1),L.latLng(-195.3125, 195.3125)),  //southWest, northEast
   maxBoundsViscosity: 1.0
 })
 
@@ -67,7 +67,7 @@ map.on('mousemove',function mouseMove(e){
   mouseLoc = map.project(e.latlng, map.getMaxZoom());
 
   // get shelf number from mouseloc.y
-  var newShelf = (((mouseLoc.y - Y_ADJUST) / SHELF_HEIGHT) | 0); 
+  var newShelf = ((mouseLoc.y / SHELF_HEIGHT) | 0);
 
   if (newShelf < 0) { shelf = 0; }
   if (newShelf < 31){ shelf = 31;}
@@ -95,7 +95,6 @@ map.on('mousemove',function mouseMove(e){
       if(!testData[shelf][i].visible){bookFile=null;continue}
       L.rectangle(bounds, {color: "#ffffff", weight: 1}).addTo(highlightLayer);
       bookFile = testData[shelf][i].file;
-      break; // no need to keep looking theres only ever one rect under the mouse
     }
 
   }
@@ -126,7 +125,7 @@ var testBackGround = function(start,end) {
         map.unproject([right,((j+1) * SHELF_HEIGHT)+Y_ADJUST],map.getMaxZoom())
       );
 
-      var imageUrl = 'new_background_slices/'+j+'_'+i+'.jpg';
+      var imageUrl = 'background_slices/'+j+'_'+i+'.png';
       L.imageOverlay(imageUrl, bounds).addTo(map);
       //L.rectangle(bounds, {color: "#ff7800", weight: 1}).addTo(map);
     }
@@ -170,7 +169,7 @@ var removeBooksAt = function(positions) {
       map.unproject([right,((shelf+1) * SHELF_HEIGHT)+Y_ADJUST],map.getMaxZoom())
     );
 
-    var imageUrl = 'new_background_slices/'+shelf+'_'+position+'.jpg';
+    var imageUrl = 'background_slices/'+shelf+'_'+position+'.png';
     L.imageOverlay(imageUrl, bounds).addTo(map);
     testData[shelf][position].visible = 0;
   }

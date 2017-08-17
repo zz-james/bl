@@ -6,13 +6,14 @@ $book = $_GET['book'];
 
 function getBookDetails() {
   global $pdo;
-
+  $book = $_POST['book'];
   $sql = "SELECT * FROM books WHERE system_number='".$book."'";
+
+
   $statement = $pdo->prepare($sql);
   $statement->execute();
   $result = $statement->fetchAll(PDO::FETCH_ASSOC);
-
-  return $result;
+  return $result[0];
 }
 
 
@@ -23,13 +24,53 @@ if($_POST['book']){
   } else {
     $result = getBookDetails();
     // the message
-    $msg = "Dear Reader,\n".$_POST['note']."\n\nThis message from the Elastic System contains the details of the following item:\n\nPlease do not reply to this message\n\n";
-    $msg .= $result['title'];
-    // use wordwrap() if lines are longer than 70 characters
-    $msg = wordwrap($msg,70);
+    $msg = '<html><body>';
+    $msg .= "<p>Dear Reader,<br/><br/>This message from the Elastic System contains the details of the following item:<br/>";
+    $msg .= "<ul>";
+
+    $msg .= "<li><b>Title: </b>";
+
+    $msg .= "<a href='http://explore.bl.uk/primo_library/libweb/action/dlDisplay.do?vid=BLVU1&afterPDS=true&institution=BL&docId=BLL01".$result['system_number']."'>".$result['title']."</a>";
+
+    $msg .= "</li>";
+
+
+    if($result['author']) {
+      $msg .= "<li><b>Author: </b>".$result['author']."</li>";
+    } else {
+      $msg .= "<li><b>Corporate Name: </b>".$result['corporate_name']."</li>";
+    }
+
+    if($result['publication_date']){
+      $msg .= "<li><b>Publication Details: </b>".$result['publication_date']."</li>";
+    }
+
+    if($result['notes']){
+      $msg .= "<li><b>Notes: </b>".$result['notes']."</li>";
+    }
+
+    if($result['transcribed_shelfmark']){
+      $msg .= "<li><b>Shelfmark: </b>".$result['transcribed_shelfmark']."</li>";
+    }
+
+    $msg .= "</ul><br/>";
+    if($_POST['note']){
+      $msg .= "<b>Note: </b>".$_POST['note'];
+    }
+    $msg .= "<br/><br/>Please do not reply to this message";
+    $msg .= "</body></html>";
+
+    //$msg = wordwrap($msg,90);
+
+    $headers = "From: noreply@elasticsystem.net\r\n";
+    $headers .= "Reply-To: noreply@http://elasticsystem.net\r\n";
+    $headers .= "MIME-Version: 1.0\r\n";
+    $headers .= "Content-Type: text/html; charset=ISO-8859-1\r\n";
 
     // send email
-    mail($_POST['sendTo'],"Search Results from the British Library",$msg);
+    mail($_POST['sendTo'],"Search Results from the Elastic System",$msg, $headers);
+
+   //echo $msg;
     echo "<script>window.top.close();</script>";
     exit();
   }
@@ -74,7 +115,7 @@ if($_POST['book']){
               <a href="#" title="Close this window (requires javascript enabled)" onclick="window.close(); return false;">Cancel</a>
             </div>
             <h2>
-              <span class="results_corner_with_border">Send By e-mail</span>
+              <span class="results_corner_with_border">Email to me</span>
             </h2>
           </div>
         </td>

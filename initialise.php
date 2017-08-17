@@ -15,9 +15,8 @@ function checkABRS() {
   http://{servername}/IoCTQuery.svc/query/{groupName}/{sinceDateTime}
   {sinceDateTime} value is yyyy-MM-dd HH:mm:ss.ms */
   $json = file_get_contents('http://api.bl.uk/IOCT/6806F32C-5E56-4D09-BCCE-A535DE4F2137/'.$dtime);
-
   $data = json_decode($json);
-  $filenames = $data->Shelfmarks;
+  $filenames    = $data->Shelfmarks;
   $returnString = getBookFilenames($filenames);
   return $returnString;
 }
